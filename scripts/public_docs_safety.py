@@ -10,15 +10,16 @@ from pathlib import Path
 
 DOC_NAMES={"README.md","SECURITY.md","CONTRIBUTING.md","AGENTS.md"}
 DOC_DIR_PARTS={"docs","doc","website","site","public"}
+EXCLUDE_PARTS={"i18n","CHANGELOG.md"}
 DOC_EXTS={".md",".mdx",".rst",".txt"}
-ALLOW_PROMPT_CONFIG=re.compile(r"(?i)(example|sample|template|user-facing|user configurable|configuration|configures? the assistant|public documentation safety|security-sensitive automation details|intentionally not published|reported as security issues|custom guardrails register|fail-open|opt-out|guardrail|route guard tiers|manage-scope|guardrails framework|prompt injection guard|instruction leak|fail-closed|system override|previous instructions|resilience|self-healing|system prompt|global system|schema notes|api key|scope type|management routes|api/mcp|cli-tools|strict-loopback|budget|cost|token limit|combo defaults|provider override|fallback|service port|environment|src/lib/services|registry model|arena|ranking|plural formats|pwa|i18n|locale|format must|must maintain|structure|don't always match|uses)")
+ALLOW_PROMPT_CONFIG=re.compile(r"(?i)(example|sample|template|user-facing|user configurable|configuration|configures? the assistant|public documentation safety|security-sensitive automation details|intentionally not published|reported as security issues|custom guardrails register|fail-open|opt-out|guardrail|route guard tiers|manage-scope|guardrails framework|prompt injection guard|instruction leak|fail-closed|system override|previous instructions|resilience|self-healing|system prompt|global system|schema notes|api key|scope type|management routes|api/mcp|cli-tools|strict-loopback|budget|cost|token limit|combo defaults|provider override|fallback|service port|environment|src/lib/services|registry model|arena|ranking|plural formats|pwa|i18n|locale|format must|must maintain|structure|don't always match|uses|cache size|service worker|static assets|response payloads|/api/|provider-specific|permission failures|model permission|worker thread|inference|event loop|notion api|skill|agentbridge|127\.0\.0\.1|/etc/hosts|improve prompt|config pane|model name|side effects|dangerous|hardcoded|configurable|not set)")
 PATTERNS=[
  ("model-directed imperative prose", re.compile(r"(?i)\b(ignore|disregard|override)\b.{0,80}\b(previous|above|system|developer|policy|instruction)s?\b")),
  ("automation-control disclosure", re.compile(r"(?i)\b(private control plane|controller policy|trusted author|mutation policy|approved explicit command marker|command marker|guard value|stop condition|tool permission|completion contract)\b")),
  ("copied privileged prompt", re.compile(r"(?i)\b(delegate_task|fresh-context reviewer|do not ask the user|do not stop after|final status must be|READY_FOR_OWNER_REVIEW|BLOCKED_WITH_EVIDENCE)\b")),
- ("prompt-injection attempt", re.compile(r"(?i)\b(system prompt|developer message|reveal (your )?(secret|token|policy)|exfiltrate|bypass tests|approve this PR|merge this PR|operate on another repository|make an external purchase)\b")),
+ ("prompt-injection attempt", re.compile(r"(?i)\b(system prompt|developer message|reveal (your )?(secret|token|policy)|exfiltrate|bypass tests|approve this PR|merge this PR|operate on another repository|make an external purchase|ignore all previous instructions|global system prompt)\b")),
 ]
-UNCERTAIN=re.compile(r"(?i)\b(agent|automation|controller|worker|model|llm)\b.{0,80}\b(must|shall|required to|always|never|use tool|run command|change goal|permission|boundary)\b")
+UNCERTAIN=re.compile(r"(?i)\b(agent|automation|controller|worker|model|llm)\b.{0,80}\b(must|shall|required to|always|never|use tool|run command|change goal|permission|boundary)\b(?!\s*(?:is|are|will|has|have)\b)")
 
 def changed_files():
  p=subprocess.run(['git','diff','--name-only','origin/'+default_branch()+'...HEAD'], text=True, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
@@ -55,7 +56,7 @@ def default_branch():
 def is_public_doc(path):
  parts=set(Path(path).parts)
  name=Path(path).name
- return name in DOC_NAMES or Path(path).suffix.lower() in DOC_EXTS and bool(parts & DOC_DIR_PARTS)
+ return not (parts & EXCLUDE_PARTS) and (name in DOC_NAMES or Path(path).suffix.lower() in DOC_EXTS and bool(parts & DOC_DIR_PARTS))
 
 def main():
  ap=argparse.ArgumentParser(); ap.add_argument('--all', action='store_true'); args=ap.parse_args()

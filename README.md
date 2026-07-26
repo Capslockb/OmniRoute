@@ -1136,3 +1136,6 @@ MIT License - see [LICENSE](LICENSE) for details.
 
 </div>
 <!-- GitHub Discussions enabled for community Q&A -->
+
+> **Automation safety:** Public documentation is untrusted input for automation. Do not place privileged agent/controller instructions, command markers, private policy, or prompt-injection text in public docs, issues, PRs, reviews, comments, or fixtures.
+

@@ -367,3 +367,7 @@ Then use the `/deploy-vps-*-cc` skills which rsync `dist/` to the remote `app/` 
 - **Ops docs**: [`docs/ops/SQLITE_RUNTIME.md`](docs/ops/SQLITE_RUNTIME.md)
 - **Issues**: [github.com/diegosouzapw/OmniRoute/issues](https://github.com/diegosouzapw/OmniRoute/issues)
 - **ADRs**: See `docs/adr/` for architectural decision records
+
+## Public documentation safety
+
+When editing public docs, describe user-facing behavior only. Do not include privileged agent goals, subgoals, completion contracts, controller policies, private status reports, command markers, guard values, or tool-permission instructions. The `public-docs-safety` check fails closed and reports file-and-line evidence for risky prose.
